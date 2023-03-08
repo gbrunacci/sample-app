@@ -5,6 +5,7 @@ export default function Home() {
       <h1>This is my second commit</h1>
       <h1>This is my third commit</h1>
       <h1>This is my fourth commit</h1>
+      <h1>This is my HOTFIX commit</h1>
     </main>
   )
 }
