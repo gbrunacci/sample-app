@@ -1,0 +1,41 @@
+name: Branch Deploy
+env:
+  PLANETSCALE_BASE_DIRECTORY: .automation/pscale
+  PLANETSCALE_SERVICE_TOKEN_ID: ${{secrets.PLANETSCALE_SERVICE_TOKEN_ID}}
+  PLANETSCALE_SERVICE_TOKEN: ${{secrets.PLANETSCALE_SERVICE_TOKEN}}
+on: pull_request
+jobs:
+  branch-setup:
+    name: Branch Setup
+    runs-on: ubuntu-latest
+    environment: Preview
+    steps:
+      - uses: actions/checkout@v2
+      - name: Initialization
+        id: init
+        uses: actions/github-script@v6
+        with:
+          script: |
+            console.log('Issue:', context.issue.number);
+            if (!context.issue.number) {
+              throw new Error('Branch deploys should only run in the context of a pull request');
+            }
+
+            core.setOutput('branchId', context.issue.number);
+      - name: Check Branch Resources
+        id: checks
+        env:
+          BRANCH_ID: ${{steps.init.outputs.branchId}}
+        working-directory: ${{env.PLANETSCALE_BASE_DIRECTORY}}/
+        run: |
+          ./check-branch.sh "preview-$BRANCH_ID"
+
+      - name: Create PlanetScale Branch
+        if: steps.checks.outputs.dbReady != 'true'
+        timeout-minutes: 3
+        env:
+          GITHUB_USER: ${{github.actor}}
+          BRANCH_ID: ${{steps.init.outputs.branchId}}
+        working-directory: ${{env.PLANETSCALE_BASE_DIRECTORY}}/
+        run: |
+          ./create-branch.sh "preview-$BRANCH_ID"

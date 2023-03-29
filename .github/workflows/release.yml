@@ -9,7 +9,6 @@ on:
 
 jobs:
   Deploy-Production:
-    if: "!github.event.release.prerelease"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
