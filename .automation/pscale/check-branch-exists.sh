@@ -16,8 +16,10 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-echo $LIST_CMD_OUTPUT | jq .
+BRANCH_INFO=$(echo $LIST_CMD_OUTPUT | jq ".[] | select(.name == \"$BRANCH_NAME\")")
 
-PS_BRANCH_READY=$(echo $LIST_CMD_OUTPUT | jq ".[] | select(.name == \"$BRANCH_NAME\") | .ready")
+echo $BRANCH_INFO | jq .
+
+PS_BRANCH_READY=$(echo $BRANCH_INFO | jq ".ready")
 
 echo "dbReady=$PS_BRANCH_READY" >>$GITHUB_OUTPUT

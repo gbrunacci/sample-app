@@ -19,6 +19,6 @@ fi
 
 echo $DIFF_CMD_OUTPUT | jq .
 
-BRANCH_DIFF_COUNT=$($DIFF_CMD --format json | jq length)
+PS_BRANCH_DIFF_COUNT=$(echo $DIFF_CMD_OUTPUT | jq length)
 
 echo "branchDiffCount=$PS_BRANCH_DIFF_COUNT" >>$GITHUB_OUTPUT
