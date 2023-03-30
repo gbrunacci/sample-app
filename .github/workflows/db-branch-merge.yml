@@ -1,4 +1,4 @@
-name: Branch Deploy
+name: Database Branch Merge
 env:
   PLANETSCALE_BASE_DIRECTORY: .automation/pscale
   PLANETSCALE_SERVICE_TOKEN_ID: ${{secrets.PLANETSCALE_SERVICE_TOKEN_ID}}
@@ -10,7 +10,7 @@ on:
     types:
       - closed
 jobs:
-  deploy-db-branch:
+  db-branch-merge:
     name: Branch Setup
     runs-on: ubuntu-latest
     environment: Preview

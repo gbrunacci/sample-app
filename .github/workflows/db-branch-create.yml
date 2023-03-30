@@ -1,4 +1,4 @@
-name: Branch Deploy
+name: Database Branch Create
 env:
   PLANETSCALE_BASE_DIRECTORY: .automation/pscale
   PLANETSCALE_SERVICE_TOKEN_ID: ${{secrets.PLANETSCALE_SERVICE_TOKEN_ID}}
@@ -7,7 +7,7 @@ env:
   DB_NAME: sample-app
 on: pull_request
 jobs:
-  branch-setup:
+  db-branch-create:
     name: Branch Setup
     runs-on: ubuntu-latest
     environment: Preview
