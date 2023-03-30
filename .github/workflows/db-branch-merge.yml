@@ -39,7 +39,7 @@ jobs:
         run: |
           ./check-branch-diff.sh "preview-$BRANCH_ID"
 
-      - name: Close branch if no changes
+      - name: Delete branch if no changes
         if: steps.checks.outputs.branchDiffCount == '0'
         env:
           BRANCH_ID: ${{steps.init.outputs.branchId}}
@@ -47,3 +47,10 @@ jobs:
         run: |
           ./delete-branch.sh "preview-$BRANCH_ID"
 
+      - name: Create deploy request if branch has changes
+        if: steps.checks.outputs.branchDiffCount != '0'
+        env:
+          BRANCH_ID: ${{steps.init.outputs.branchId}}
+        working-directory: ${{env.PLANETSCALE_BASE_DIRECTORY}}/
+        run: |
+          ./create-deploy-request.sh "preview-$BRANCH_ID"
