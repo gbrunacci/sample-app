@@ -49,8 +49,31 @@ jobs:
 
       - name: Create deploy request if branch has changes
         if: steps.checks.outputs.branchDiffCount != '0'
+        id: create-deploy-request
         env:
           BRANCH_ID: ${{steps.init.outputs.branchId}}
         working-directory: ${{env.PLANETSCALE_BASE_DIRECTORY}}/
         run: |
           ./create-deploy-request.sh "preview-$BRANCH_ID"
+
+      - name: Report deploy reuqest info
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const message = `
+              ## PlanetScale Deploy Request
+
+              Database branch has changes, a deploy request has been created.
+              
+              You can review and merge it the following URL: ${{ steps.create-deploy-request.outputs.DEPLOY_REQUEST_URL }}
+
+              While we could merge this automatically, we encourage you to review the changes before they are merged and verify if any data treatment is required before or after merging.
+
+              Remember to delete the preview branch once the deploy request is applied.
+            `;
+
+            github.rest.issues.createComment({
+              ...context.repo,
+              issue_number: context.issue.number,
+              body: message
+            });
