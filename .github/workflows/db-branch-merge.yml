@@ -73,8 +73,11 @@ jobs:
               Remember to delete the preview branch once the deploy request is applied.
             `;
 
-            github.rest.issues.createComment({
-              ...context.repo,
+            console.debug(context);
+
+            await github.rest.issues.createComment({
               issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
               body: message
             });
