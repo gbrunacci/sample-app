@@ -3,14 +3,18 @@ env:
   PLANETSCALE_BASE_DIRECTORY: .automation/pscale
   PLANETSCALE_SERVICE_TOKEN_ID: ${{secrets.PLANETSCALE_SERVICE_TOKEN_ID}}
   PLANETSCALE_SERVICE_TOKEN: ${{secrets.PLANETSCALE_SERVICE_TOKEN}}
-  ORG_NAME: gbrunacci
-  DB_NAME: sample-app
-on: pull_request
+on:
+  pull_request:
+    branches:
+      - main
+    types:
+      - closed
 jobs:
-  branch-setup:
+  deploy-db-branch:
     name: Branch Setup
     runs-on: ubuntu-latest
     environment: Preview
+    if: github.event.pull_request.merged == true
     steps:
       - uses: actions/checkout@v2
       - name: Initialization
@@ -31,14 +35,5 @@ jobs:
           BRANCH_ID: ${{steps.init.outputs.branchId}}
         working-directory: ${{env.PLANETSCALE_BASE_DIRECTORY}}/
         run: |
-          ./check-branch-exists.sh "preview-$BRANCH_ID"
+          ./check-branch-diff.sh "preview-$BRANCH_ID"
 
-      - name: Create PlanetScale Branch
-        if: steps.checks.outputs.dbReady != 'true'
-        timeout-minutes: 3
-        env:
-          GITHUB_USER: ${{github.actor}}
-          BRANCH_ID: ${{steps.init.outputs.branchId}}
-        working-directory: ${{env.PLANETSCALE_BASE_DIRECTORY}}/
-        run: |
-          ./create-branch.sh "preview-$BRANCH_ID"
