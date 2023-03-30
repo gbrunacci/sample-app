@@ -1,22 +1,24 @@
 #!/bin/bash
 
 . ./lib/use-pscale-docker-image.sh
-. ./lib/wait-for-branch-readiness.sh
-
 . ./lib/authenticate-ps.sh
 
 BRANCH_NAME="$1"
 
-echo "Checking branch: $BRANCH_NAME"
+echo "Checking if branch $BRANCH_NAME has differences with main branch."
 
-RAW_OUTPUT=$(pscale branch diff "$DB_NAME" "$BRANCH_NAME" --org "$ORG_NAME" --format json)
+DIFF_CMD="pscale branch diff $DB_NAME $BRANCH_NAME --org $ORG_NAME --format json"
+DIFF_CMD_OUTPUT=$($DIFF_CMD)
 
 # check return code, if not 0 then error
 if [ $? -ne 0 ]; then
-    echo "Error: pscale branch list returned non-zero exit code $?: $RAW_OUTPUT"
+    echo "Error: $DIFF_CMD returned non-zero exit code $?. See output below."
+    echo $DIFF_CMD_OUTPUT
     exit 1
 fi
 
-PS_BRANCH_READY=$(echo $RAW_OUTPUT | jq ".[] | select(.name == \"$BRANCH_NAME\") | .ready")
+echo $DIFF_CMD_OUTPUT | jq .
 
-echo "dbReady=$PS_BRANCH_READY" >>$GITHUB_OUTPUT
+BRANCH_DIFF_COUNT=$($DIFF_CMD --format json | jq length)
+
+echo "branchDiffCount=$PS_BRANCH_DIFF_COUNT" >>$GITHUB_OUTPUT

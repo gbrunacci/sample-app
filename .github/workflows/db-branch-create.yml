@@ -8,7 +8,7 @@ env:
 on: pull_request
 jobs:
   db-branch-create:
-    name: Branch Setup
+    name: DB Branch Create
     runs-on: ubuntu-latest
     environment: Preview
     steps:

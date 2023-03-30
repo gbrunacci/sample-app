@@ -3,6 +3,8 @@ env:
   PLANETSCALE_BASE_DIRECTORY: .automation/pscale
   PLANETSCALE_SERVICE_TOKEN_ID: ${{secrets.PLANETSCALE_SERVICE_TOKEN_ID}}
   PLANETSCALE_SERVICE_TOKEN: ${{secrets.PLANETSCALE_SERVICE_TOKEN}}
+  ORG_NAME: gbrunacci
+  DB_NAME: sample-app
 on:
   pull_request:
     branches:
@@ -11,7 +13,7 @@ on:
       - closed
 jobs:
   db-branch-merge:
-    name: Branch Setup
+    name: DB Branch Merge
     runs-on: ubuntu-latest
     environment: Preview
     if: github.event.pull_request.merged == true
@@ -29,11 +31,19 @@ jobs:
 
             core.setOutput('branchId', context.issue.number);
 
-      - name: Check Branch Resources
+      - name: Check branch changes against main
         id: checks
         env:
           BRANCH_ID: ${{steps.init.outputs.branchId}}
         working-directory: ${{env.PLANETSCALE_BASE_DIRECTORY}}/
         run: |
           ./check-branch-diff.sh "preview-$BRANCH_ID"
+
+      - name: Close branch if no changes
+        if: steps.checks.outputs.branchDiffCount == '0'
+        env:
+          BRANCH_ID: ${{steps.init.outputs.branchId}}
+        working-directory: ${{env.PLANETSCALE_BASE_DIRECTORY}}/
+        run: |
+          ./delete-branch.sh "preview-$BRANCH_ID"
 

@@ -7,15 +7,16 @@ BRANCH_NAME="$1"
 
 echo "Checking if branch $BRANCH_NAME exists and is ready"
 
-pscale org list
-pscale database list --org $ORG_NAME
-
-RAW_OUTPUT=$(pscale branch list $DB_NAME --org $ORG_NAME --format json)
+LIST_CMD="pscale branch list $DB_NAME --org $ORG_NAME --format json"
+LIST_CMD_OUTPUT=$($LIST_CMD)
 
 if [ $? -ne 0 ]; then
-    echo "Error: pscale branch list returned non-zero exit code $?: $RAW_OUTPUT"
+    echo "Error: $LIST_CMD returned non-zero exit code $?. See output below."
+    echo $LIST_CMD_OUTPUT
     exit 1
 fi
+
+echo $LIST_CMD_OUTPUT | jq .
 
 PS_BRANCH_READY=$(echo $RAW_OUTPUT | jq ".[] | select(.name == \"$BRANCH_NAME\") | .ready")
 
