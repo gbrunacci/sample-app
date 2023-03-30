@@ -7,7 +7,7 @@ BRANCH_NAME="$1"
 
 echo "Checking if branch $BRANCH_NAME exists and is ready"
 
-RAW_OUTPUT=$(pscale branch list $DB_NAME --org $ORG_NAME --format json)
+RAW_OUTPUT=$(pscale branch list $DB_NAME --format json)
 
 if [ $? -ne 0 ]; then
     echo "Error: pscale branch list returned non-zero exit code $?: $RAW_OUTPUT"
