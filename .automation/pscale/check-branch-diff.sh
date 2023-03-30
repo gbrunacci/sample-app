@@ -5,7 +5,7 @@
 
 BRANCH_NAME="$1"
 
-echo "Checking if branch $BRANCH_NAME has differences with main branch."
+echo "Checking if branch $BRANCH_NAME has differences with main branch"
 
 DIFF_CMD="pscale branch diff $DB_NAME $BRANCH_NAME --org $ORG_NAME --format json"
 DIFF_CMD_OUTPUT=$($DIFF_CMD)

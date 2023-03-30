@@ -5,11 +5,16 @@
 
 BRANCH_NAME="$1"
 
-RAW_OUTPUT=$(pscale branch delete $DB_NAME $BRANCH_NAME --org $ORG_NAME --force --format json)
+DELETE_CMD="pscale branch delete $DB_NAME $BRANCH_NAME --org $ORG_NAME --force"
 
+echo "Deleting branch $BRANCH_NAME"
+DELETE_CMD_OUTPUT=$($DELETE_CMD)
+
+# check return code, if not 0 then error
 if [ $? -ne 0 ]; then
-    echo "Error: pscale branch delete returned non-zero exit code $?: $RAW_OUTPUT"
+    echo "Error: $DELETE_CMD returned non-zero exit code $?. See output below."
+    echo $DELETE_CMD_OUTPUT
     exit 1
 fi
 
-echo $RAW_OUTPUT
+echo $DELETE_CMD_OUTPUT
