@@ -18,6 +18,6 @@ fi
 
 echo $LIST_CMD_OUTPUT | jq .
 
-PS_BRANCH_READY=$(echo $RAW_OUTPUT | jq ".[] | select(.name == \"$BRANCH_NAME\") | .ready")
+PS_BRANCH_READY=$(echo $LIST_CMD_OUTPUT | jq ".[] | select(.name == \"$BRANCH_NAME\") | .ready")
 
 echo "dbReady=$PS_BRANCH_READY" >>$GITHUB_OUTPUT
