@@ -1,16 +1,22 @@
-name: Database Branch Create
+name: Database Branch Merge
 env:
   PLANETSCALE_BASE_DIRECTORY: .automation/pscale
   PLANETSCALE_SERVICE_TOKEN_ID: ${{secrets.PLANETSCALE_SERVICE_TOKEN_ID}}
   PLANETSCALE_SERVICE_TOKEN: ${{secrets.PLANETSCALE_SERVICE_TOKEN}}
   ORG_NAME: gbrunacci
   DB_NAME: sample-app
-on: pull_request
+on:
+  pull_request:
+    branches:
+      - main
+    types:
+      - closed
 jobs:
-  db-branch-create:
-    name: DB Branch Create
+  db-branch-merge:
+    name: DB Branch Merge
     runs-on: ubuntu-latest
     environment: Preview
+    if: github.event.pull_request.merged == true
     steps:
       - uses: actions/checkout@v2
       - name: Initialization
@@ -25,20 +31,19 @@ jobs:
 
             core.setOutput('branchId', context.issue.number);
 
-      - name: Check Branch Resources
+      - name: Check branch changes against main
         id: checks
         env:
           BRANCH_ID: ${{steps.init.outputs.branchId}}
         working-directory: ${{env.PLANETSCALE_BASE_DIRECTORY}}/
         run: |
-          ./check-branch-exists.sh "preview-$BRANCH_ID"
+          ./check-branch-diff.sh "preview-$BRANCH_ID"
 
-      - name: Create PlanetScale Branch
-        if: steps.checks.outputs.dbReady != 'true'
-        timeout-minutes: 3
+      - name: Close branch if no changes
+        if: steps.checks.outputs.branchDiffCount == '0'
         env:
-          GITHUB_USER: ${{github.actor}}
           BRANCH_ID: ${{steps.init.outputs.branchId}}
         working-directory: ${{env.PLANETSCALE_BASE_DIRECTORY}}/
         run: |
-          ./create-branch.sh "preview-$BRANCH_ID"
+          ./delete-branch.sh "preview-$BRANCH_ID"
+
