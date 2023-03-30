@@ -70,7 +70,7 @@ jobs:
 
               While we could merge this automatically, we encourage you to review the changes before they are merged and verify if any data treatment is required before or after merging.
 
-              Remember to `delete` the preview branch once the deploy request is applied.
+              Remember to delete the preview branch once the deploy request is applied.
             `;
 
             github.rest.issues.createComment({
