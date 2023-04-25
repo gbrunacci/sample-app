@@ -1,15 +1,14 @@
+'use client';
+import { useSearchParams } from 'next/navigation';
+import { HomeBody } from './HomeBody';
+
 export default function Home() {
+  const searchParams = useSearchParams();
+  console.debug('I am rendering');
   return (
     <main>
-      <h1>This is my first commit</h1>
-      <h1>This is my second commit</h1>
-      <h1>This is my third commit</h1>
-      <h1>This is my fourth commit</h1>
-      <h1>This is my fifth commit</h1>
-      <h1>This is my sixth commit</h1>
-      <h1>This is my 8 commit</h1>
-      <h1>This is my 9 commit</h1>
-      <h1>This is my 10 commit</h1>
+      <h1>This is my title</h1>
+      <HomeBody foo={searchParams.get('foo') || ''} />
     </main>
-  )
+  );
 }
