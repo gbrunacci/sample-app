@@ -7,7 +7,7 @@ env:
 on: pull_request
 
 jobs:
-  Deploy-:
+  Deploy-Preview:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -24,4 +24,11 @@ jobs:
       - name: Build Project Artifacts
         run: vercel build --token=${{ env.VERCEL_TOKEN }}
       - name: Deploy Project Artifacts to Vercel
-        run: vercel deploy --token=${{ env.VERCEL_TOKEN }}
+        run: |
+          DEPLOY_URL=$(vercel deploy --token=${{ env.VERCEL_TOKEN }})
+          echo "Deployed to $DEPLOY_URL"
+          # Create DEPLOY_NAME from DEPLOY_URL removing the https:// part from it
+          DEPLOY_NAME=$(echo $DEPLOY_URL | sed -e 's/https:\/\///g')
+          echo "Deploy Name: $DEPLOY_NAME"
+          DEPLOY_ALIAS="sample-app-gbrunacci-preview.vercel.app"
+          vercel alias $DEPLOY_NAME $DEPLOY_ALIAS --token=${{ env.VERCEL_TOKEN }}
