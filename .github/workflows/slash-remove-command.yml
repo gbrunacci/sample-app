@@ -17,8 +17,7 @@ jobs:
         uses: actions/github-script@v6
         with:
           script: |
-            console.log('Issue:', context.issue.number);
-            console.log('Comment:', context.event.comment.body);
+            console.log(JSON.stringify(context, null, 2));
 
             if (!context.issue.number) {
               throw new Error('Branch deploys should only run in the context of a pull request');
