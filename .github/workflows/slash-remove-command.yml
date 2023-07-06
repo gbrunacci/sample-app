@@ -23,7 +23,7 @@ jobs:
               throw new Error('Branch deploys should only run in the context of a pull request');
             }
 
-            if (payload.comment.body !== '/remove') {
+            if (context.payload.comment.body !== '/remove') {
               throw new Error('Comment body should be /remove');
             }
 
