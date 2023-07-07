@@ -6,7 +6,7 @@ jobs:
   remove-pr-environment:
     name: Remove Preview CMS
     # check if the comments come from pull request, exclude those from issue.
-    if: github.event.issue.pull_request
+    if: github.event.issue.pull_request && github.event.comment.body == '/remove'
     runs-on: ubuntu-latest
     environment: Preview
     timeout-minutes: 5
